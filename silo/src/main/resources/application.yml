@@ -1,0 +1,5 @@
+server:
+  port: 10201
+spring:
+  application:
+    name: notification-silo
