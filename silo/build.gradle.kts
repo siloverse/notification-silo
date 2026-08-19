@@ -3,7 +3,7 @@ plugins {
 }
 
 application {
-    mainClass.set("io.github.siloverse.ApplicationKt")
+    mainClass.set("io.github.siloverse.notification.ApplicationKt")
 }
 
 dependencies {
