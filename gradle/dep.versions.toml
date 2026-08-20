@@ -1,7 +1,9 @@
 [versions]
 
 [libraries]
+spring-boot-oauth2-resource-server = { module = "org.springframework.boot:spring-boot-starter-oauth2-resource-server" }
 
 [plugins]
 
 [bundles]
+spring-security = ["spring-boot-oauth2-resource-server"]

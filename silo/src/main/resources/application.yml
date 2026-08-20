@@ -3,3 +3,11 @@ server:
 spring:
   application:
     name: notification-silo
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://keycloak.macgrant-platform.test/realms/kyc
+logging:
+  level:
+    org.springframework.security: TRACE
