@@ -1,5 +1,6 @@
-package io.github.siloverse.notification.security
+package io.github.siloverse.notification.config
 
+import io.github.siloverse.notification.security.KeycloakJwtAuthenticationConverter
 import jakarta.servlet.DispatcherType
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -16,7 +17,11 @@ class SecurityConfiguration {
         return http
             .authorizeHttpRequests {
                 it.dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
-                it.requestMatchers("/actuator/health").permitAll()
+                it.requestMatchers(
+                    "/actuator/health",
+                    "/actuator/prometheus",
+                    "/actuator/info"
+                ).permitAll()
                 it.anyRequest().authenticated()
             }
             .oauth2ResourceServer {

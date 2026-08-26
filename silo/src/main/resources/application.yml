@@ -26,4 +26,29 @@ messaging:
     vhost: siloverse
 logging:
   level:
-    org.springframework.security: TRACE
+    root: INFO
+management:
+  otlp:
+    metrics:
+      export:
+        enabled: false          # metrics via Prometheus scrape — deliberate (plan 6.x)
+  logging:
+    export:
+      otlp:
+        enabled: true
+  opentelemetry:
+    logging:
+      export:
+        otlp:
+          endpoint: https://otel.macgrant-platform.test/v1/logs
+    tracing:
+      export:
+        otlp:
+          endpoint: https://otel.macgrant-platform.test/v1/traces
+  tracing:
+    sampling:
+      probability: 1.0
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus,info
