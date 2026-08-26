@@ -3,11 +3,27 @@ server:
 spring:
   application:
     name: notification-silo
+  datasource:
+    url: jdbc:postgresql://postgres.macgrant-platform.test:5432/siloverse?currentSchema=notification_silo
+    username: notification-silo
+    password: notification-silo
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    default-schema: notification_silo
   security:
     oauth2:
       resourceserver:
         jwt:
           issuer-uri: https://keycloak.macgrant-platform.test/realms/kyc
+messaging:
+  rabbitmq:
+    host: rabbitmq.macgrant-platform.test
+    port: 5672
+    username: admin
+    password: admin
+    vhost: siloverse
 logging:
   level:
     org.springframework.security: TRACE
