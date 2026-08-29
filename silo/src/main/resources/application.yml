@@ -27,6 +27,7 @@ messaging:
 logging:
   level:
     root: INFO
+    io.github.siloverse.messaging: DEBUG
 management:
   otlp:
     metrics:

@@ -59,6 +59,9 @@ class GoldenPathIntegrationTest {
     @Autowired
     lateinit var repository: NotificationRepository
 
+    @Autowired
+    lateinit var envelopeFactory: EnvelopeFactory
+
     @Test
     fun `event on the wire becomes exactly one notification row, even when redelivered`() {
         val event = UserRegistered(
@@ -68,7 +71,7 @@ class GoldenPathIntegrationTest {
             displayName = "Golden Path",
             occurredAt = OffsetDateTime.now().truncatedTo(ChronoUnit.MILLIS),
         )
-        val envelope = EnvelopeFactory(names, serializer).envelopeFor(event)
+        val envelope = envelopeFactory.envelopeFor(event)
 
         // 1. first delivery -> one row
         transport.send(envelope)
@@ -82,7 +85,8 @@ class GoldenPathIntegrationTest {
         assertEquals(1, repository.findByRecipientEmail(event.email).size, "dedup must swallow the redelivery")
 
         // 3. a genuinely new message (fresh messageId) -> second row
-        val second = EnvelopeFactory(names, serializer).envelopeFor(event.copy(userId = UUID.randomUUID()))
+
+        val second = envelopeFactory.envelopeFor(event.copy(userId = UUID.randomUUID()))
         transport.send(second)
         awaitRowCount(2)
     }
