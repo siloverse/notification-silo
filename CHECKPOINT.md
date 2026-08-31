@@ -1,8 +1,15 @@
 # CHECKPOINT — notification-silo
 
-_Last updated: 2026-08-20. This document is the arbiter: if Claude asserts something about this repo that isn't here or visible in the code, call it — that's drift._
+_Last updated: 2026-08-31. This document is the arbiter: if Claude asserts something about this repo that isn't here or visible in the code, call it — that's drift._
 
 **Role in the platform:** consumer. Subscribes to `user-silo.user-registered` (Phase 5: inbox dedup, notification record + structured log). Resource server for any HTTP surface. Base package `io.github.siloverse.notification`.
+
+## Retry tiers live (2026-08-31) — poison test verified on the real broker
+
+- **Wiring** (`MessagingConfiguration.kt`): `retrySettings` bean binds `messaging.rabbitmq.default-policy` → `RetryPolicy` via Binder, `.map { RetrySettings(it) }.orElseGet { RetrySettings.DEFAULT }`; passed to `declareConsumerTopology`; `failedDeliveryHandler` bean (interface-typed) = `RetryingFailedDeliveryHandler(retrySettings, "notification-silo")`, handed to the listener after the inbox. Nullable creep removed while in there (`ConsumerRegistry`/`MessageNameRegistry` params de-nulled too).
+- **Per-consumer policy in code**: `@RabbitPolicy(maxAttempts = 10, delayMillis = 5_000)` on the notifier, next to `@Consumer` — the library's annotation>yml>code-default ladder (see java-library/CHECKPOINT.md for the design story). application.yml deliberately has NO `default-policy` block (YAGNI: single consumer, annotated; code default `RetrySettings.DEFAULT` (3, 10s) is the silo default until a second consumer needs otherwise).
+- **Broker migration paid**: old argument-less queue deleted in vhost `siloverse`, restart declared dlq → retry → main with dead-letter args. Reminder for next time: changing `delayMillis` re-declares the retry queue TTL → 406; queue deletion is part of that deploy.
+- **Live poison test — every prediction verified**: retry queue `x-message-ttl: 5000` (the annotation, on the broker); `x-death` = 9× rejected (main) + 9× expired (retry); parked on delivery 10 = exactly `maxAttempts`; exactly ONE DLQ message carrying `x-parking-cause: RuntimeException: Poison Message`; parking republish added no x-death entry (counter stays honest); `traceparent` survived all nine round trips — Tempo trace `3a338553323c64a65004f49ee38dd6c7` = the poison money shot (~20 red consume spans, 10 deliveries × 2 invocations via the immediate in-process retry, ~50s timeline). Test resident may still sit in the .dlq (purge or keep as museum piece — DLQ-with-a-human means Awais is the human).
 
 ## Built & green (Phase 5 consumer, 2026-08-26) — the silo does its job
 
