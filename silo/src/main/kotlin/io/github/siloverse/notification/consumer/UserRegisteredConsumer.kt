@@ -1,6 +1,7 @@
 package io.github.siloverse.notification.consumer
 
 import io.github.siloverse.messaging.core.consumer.Consumer
+import io.github.siloverse.messaging.rabbitmq.consumer.RabbitPolicy
 import io.github.siloverse.notification.domain.NotificationEntity
 import io.github.siloverse.notification.persistence.NotificationRepository
 import io.github.siloverse.user.event.UserRegistered
@@ -20,6 +21,7 @@ class UserRegisteredConsumer(
      * never record a second WELCOME notification.
      */
     @Consumer(id = "user-registered-notifier", dedup = true)
+    @RabbitPolicy(maxAttempts = 10, delayMillis = 5_000)
     fun consume(message: UserRegistered) {
         repository.save(
             NotificationEntity(
