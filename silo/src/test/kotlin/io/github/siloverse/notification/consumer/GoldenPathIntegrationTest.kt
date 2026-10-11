@@ -13,9 +13,6 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Import
-import org.springframework.test.context.DynamicPropertyRegistry
-import org.springframework.test.context.DynamicPropertySource
-import org.testcontainers.containers.RabbitMQContainer
 import java.time.OffsetDateTime
 import java.time.temporal.ChronoUnit
 import java.util.*
@@ -30,22 +27,6 @@ import java.util.*
 @SpringBootTest
 @Import(TestcontainersConfiguration::class)
 class GoldenPathIntegrationTest {
-
-    companion object {
-        @JvmStatic
-        val rabbit: RabbitMQContainer =
-            RabbitMQContainer("rabbitmq:4.1-management-alpine").apply { start() }
-
-        @JvmStatic
-        @DynamicPropertySource
-        fun rabbitProperties(registry: DynamicPropertyRegistry) {
-            registry.add("messaging.rabbitmq.host") { rabbit.host }
-            registry.add("messaging.rabbitmq.port") { rabbit.amqpPort }
-            registry.add("messaging.rabbitmq.username") { rabbit.adminUsername }
-            registry.add("messaging.rabbitmq.password") { rabbit.adminPassword }
-            registry.add("messaging.rabbitmq.vhost") { "/" }
-        }
-    }
 
     @Autowired
     lateinit var transport: MessageTransport
