@@ -1,8 +1,15 @@
 # CHECKPOINT — notification-silo
 
-_Last updated: 2026-08-31. This document is the arbiter: if Claude asserts something about this repo that isn't here or visible in the code, call it — that's drift._
+_Last updated: 2026-10-11. This document is the arbiter: if Claude asserts something about this repo that isn't here or visible in the code, call it — that's drift._
 
 **Role in the platform:** consumer. Subscribes to `user-silo.user-registered` (Phase 5: inbox dedup, notification record + structured log). Resource server for any HTTP surface. Base package `io.github.siloverse.notification`.
+
+## State at merge to main (2026-10-11)
+
+- Branch `add-spring-secuirty` (2026-08-19 to 2026-09-03) merged: structure, release 0.0.1, resource server (Phase 2), the `UserRegistered` consumer with inbox dedup and notification table (Phase 5), observability (Phase 6), messaging 1.0.11 tracing, retry tiers with `@RabbitPolicy` verified by a live poison test, siloverse-build 1.11.1.
+- **Released:** `0.0.1`. Nothing depends on this silo's artifacts; no release is pending. Version is `0.0.2-SNAPSHOT`.
+- Pins messaging `1.0.11-SNAPSHOT` and user-silo `messages` `1.1.4-SNAPSHOT` from mavenLocal; CI will be red until both are released and pinned.
+- Still parked: the `/api/users/me` chain-test leftover (`MeController` is still here), tests for the HTTP surface (plan 2.6).
 
 ## Retry tiers live (2026-08-31) — poison test verified on the real broker
 
