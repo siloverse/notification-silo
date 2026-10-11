@@ -1,6 +1,6 @@
 [versions]
-siolverse-messaging = "1.0.11-SNAPSHOT"
-siolverse-user-silo = "1.1.4-SNAPSHOT"
+siolverse-messaging = "1.0.12"
+siolverse-user-silo = "1.1.4"
 
 [libraries]
 flyway-postgresql = { module = "org.flywaydb:flyway-database-postgresql" }
